@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -59,16 +60,32 @@ public class MainWindowController implements Initializable {
     @FXML
     private TableColumn<Poem, String> poet_column;
 
+
+    ObservableList<Poem> poems;
+    ObservableList<Root> roots;
+    ObservableList<Couplet> couplets;
+
+    //context menu
+    @FXML
+    private ContextMenu contextMenu;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        poems=FXCollections.observableArrayList();
+        couplets=FXCollections.observableArrayList();
+        roots=FXCollections.observableArrayList();
+        loadPoems();
+        loadRoots();
+    }
+
     @FXML
     public void showAddNewPoemDialog(ActionEvent event){
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.initOwner(mainBorderPane.getScene().getWindow());
         FXMLLoader fxmlLoader = new FXMLLoader();
-        //System.out.println(Main.clasgetResource("add_poem.fxml"));
-        fxmlLoader.setLocation(getClass().getResource("/com/example/com/corpus/ui/add_poem.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/com/example/com/corpus/views/add_poem.fxml"));
         try {
             dialog.getDialogPane().setContent(fxmlLoader.load());
-
         } catch(IOException e) {
             System.out.println("Couldn't load the dialog");
             e.printStackTrace();
@@ -83,9 +100,8 @@ public class MainWindowController implements Initializable {
             AddPoemController controller = fxmlLoader.getController();
             Poem poem=controller.processResults();
             DataBaseHandler.getInstance().insertPoem(poem);
-
-            System.out.println("Data Inserted Successfully");
-            //loadPoems();
+            poems.add(poem);
+            System.out.println("Poem Inserted Successfully");
         } else {
             System.out.println("Cancel pressed");
         }
@@ -100,12 +116,11 @@ public class MainWindowController implements Initializable {
             Dialog<ButtonType> dialog=new Dialog<>();
 
             FXMLLoader fxmlLoader=new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/com/example/com/corpus/ui/add_couplet.fxml"));
+            fxmlLoader.setLocation(getClass().getResource("/com/example/com/corpus/views/add_couplet.fxml"));
 
             dialog.initOwner(mainBorderPane.getScene().getWindow());
             try {
                 dialog.getDialogPane().setContent(fxmlLoader.load());
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -117,22 +132,18 @@ public class MainWindowController implements Initializable {
                 AddCoupletController controller = fxmlLoader.getController();
                 Couplet couplet=controller.processResults();
                 DataBaseHandler.getInstance().insertCouplet(selectedPoem.getID(), couplet);
-
+                couplets.add(couplet);
                 System.out.println("Data Inserted Successfully");
             } else {
                 System.out.println("Cancel pressed");
             }
-
         }
-
     }
     @FXML
     public void showAddNewRootDialog(ActionEvent event){
-        System.out.println("Add new Root click");
-
         Dialog<ButtonType> dialog=new Dialog<>();
         FXMLLoader fxmlLoader=new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("/com/example/com/corpus/ui/add_root.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/com/example/com/corpus/views/add_root.fxml"));
         dialog.initOwner(mainBorderPane.getScene().getWindow());
         try {
             dialog.getDialogPane().setContent(fxmlLoader.load());
@@ -147,63 +158,97 @@ public class MainWindowController implements Initializable {
             AddRootController controller = fxmlLoader.getController();
             Root root=controller.processResults();
             DataBaseHandler.getInstance().insertRoot(root);
-
+            roots.add(root);
             System.out.println("Data Inserted Successfully");
         } else {
             System.out.println("Cancel pressed");
         }
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
 
-        loadPoems();
-        loadRoots();
-//        ObservableList<Poem> poemList= FXCollections.observableArrayList();
-//        poemList=DataBaseHandler.getInstance().getPoems();
-//        coupletTableView.setItems(poemList);
-//        poemList.addAll(DataBaseHandler.getInstance().getPoems());
-//        left_list_view.setItems(poemList);
-//        left_list_view.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        left_list_view.getSelectionModel().selectFirst();
-//        Poem poem=new Poem();
-//        poem= (Poem) left_list_view.getSelectionModel().getSelectedItem();
-//        title.setText(poem.getTitle());
-//        book.setText(poem.getBook());
-//        poet.setText(poem.getPoet());
-//        left_list_view.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        left_list_view.getSelectionModel().selectFirst();
-//        left_list_view.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-//                if(newValue!=null){
-//                    Poem poem=new Poem();
-//                    poem= (Poem) left_list_view.getSelectionModel().getSelectedItem();
-//                    title.setText(poem.getTitle());
-//                    book.setText(poem.getBook());
-//                    poet.setText(poem.getPoet());
-//                    //right_list_view.setItems(DataBaseHandler.getInstance().getCouplets(poem.getID()));
-//                    coupletTableView.getItems().clear();
-//                    coupletTableView.setItems(DataBaseHandler.getInstance().getCouplets(poem.getID()));
-//                    line1.setCellValueFactory(new PropertyValueFactory<Couplet, String>("line1"));
-//                    line2.setCellValueFactory(new PropertyValueFactory<Couplet, String>("line2"));
-//
-//                }
-//            }
-//        });
-    }
 
     private void loadRoots() {
-        ObservableList<Root> roots;
         roots=DataBaseHandler.getInstance().getRootList();
-       // System.out.println("roots: "+roots);
         rootTableView.setItems(roots);
         rootLetters.setCellValueFactory(new PropertyValueFactory<>("root"));
         inQuran.setCellValueFactory(new PropertyValueFactory<>("inQuran"));
+
+        ContextMenu contextMenu=new ContextMenu();
+        MenuItem delMenuItem=new MenuItem("Delete");
+        MenuItem updateMenuItem=new MenuItem("Update");
+        contextMenu.getItems().addAll(delMenuItem, updateMenuItem);
+        rootTableView.setContextMenu(contextMenu);
+        delMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Root root=new Root();
+                root=rootTableView.getSelectionModel().getSelectedItem();
+                DataBaseHandler.getInstance().deleteRoot(root);
+                roots.remove(root);
+            }
+        });
+        updateMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("Update");
+            }
+        });
+
+
     }
 
     private void loadPoems() {
-        poemTable.setItems(DataBaseHandler.getInstance().getPoems());
+        poems=DataBaseHandler.getInstance().getPoems();
+        contextMenu=new ContextMenu();
+        MenuItem  delMenuItem=new MenuItem("Delete");
+        MenuItem  updateMenuItem=new MenuItem("Update");
+        contextMenu.getItems().addAll(delMenuItem, updateMenuItem);
+        poemTable.setContextMenu(contextMenu);
+        delMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                    //System.out.println("Del pressed");
+                    Poem poem=new Poem();
+                    poem= (Poem) poemTable.getSelectionModel().getSelectedItem();
+                    //System.out.println(poem);
+                    DataBaseHandler.getInstance().deletePoem(poem);
+            }
+        });
+        updateMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               // System.out.println("update pressed");
+                Poem poem=new Poem();
+                poem= (Poem) poemTable.getSelectionModel().getSelectedItem();
+                FXMLLoader fxmlLoader=new FXMLLoader();
+                Dialog<ButtonType> dialog=new Dialog<>();
+                fxmlLoader.setLocation(getClass().getResource("/com/example/com/corpus/views/add_poem.fxml"));
+                try {
+                    dialog.getDialogPane().setContent(fxmlLoader.load());
+                } catch(IOException e) {
+                    System.out.println("Couldn't load the dialog");
+                    e.printStackTrace();
+                    return;
+                }
+
+                dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+
+                Optional<ButtonType> result = dialog.showAndWait();
+                if(result.isPresent() && result.get() == ButtonType.OK) {
+                    AddPoemController controller = fxmlLoader.getController();
+                    controller.setData(poem);
+                    //DataBaseHandler.getInstance().insertPoem(poem);
+                    //poems.add(poem);
+                    System.out.println("Poem Inserted Successfully");
+                } else {
+                    System.out.println("Cancel pressed");
+                }
+
+            }
+        });
+
+        poemTable.setItems(poems);
         title_column.setCellValueFactory(new PropertyValueFactory<Poem, String>("title"));
         book_column.setCellValueFactory(new PropertyValueFactory<Poem, String>("book"));
         poet_column.setCellValueFactory(new PropertyValueFactory<Poem, String>("poet"));
@@ -228,8 +273,31 @@ public class MainWindowController implements Initializable {
 
     private void loadCouplets(int id) {
         coupletTableView.getItems().clear();
-        coupletTableView.setItems(DataBaseHandler.getInstance().getCouplets(id));
+        couplets=DataBaseHandler.getInstance().getCouplets(id);
+        coupletTableView.setItems(couplets);
         line1.setCellValueFactory(new PropertyValueFactory<Couplet, String>("line1"));
         line2.setCellValueFactory(new PropertyValueFactory<Couplet, String>("line2"));
+
+        ContextMenu contextMenu=new ContextMenu();
+        MenuItem delMenuItem=new MenuItem("Delete");
+        MenuItem updateMenuItem=new MenuItem("Update");
+        contextMenu.getItems().addAll(delMenuItem, updateMenuItem);
+        coupletTableView.setContextMenu(contextMenu);
+        delMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Couplet couplet=coupletTableView.getSelectionModel().getSelectedItem();
+                DataBaseHandler.getInstance().deleteSingleCouplet(couplet.getID());
+                couplets.remove(couplet);
+                System.out.println("Del Pressed");
+            }
+        });
+        updateMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("Update Pressed");
+            }
+        });
+
     }
 }

@@ -21,4 +21,10 @@ public class AddPoemController {
         poem.setBook(book.getText());
         return poem;
     }
+
+    public void setData(Poem poem) {
+        title.setText(poem.getTitle());
+        book.setText(poem.getBook());
+        poet.setText(poem.getPoet());
+    }
 }

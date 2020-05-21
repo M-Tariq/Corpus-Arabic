@@ -12,7 +12,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("ui/main_window.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("views/main_window.fxml"));
             primaryStage.setTitle("Corpus-Arabic");
             primaryStage.setScene(new Scene(root, 900, 500));
             primaryStage.show();

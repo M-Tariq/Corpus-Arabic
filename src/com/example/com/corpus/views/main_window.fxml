@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="438.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.com.corpus.controllers.MainWindowController">
+   <top>
+
+      <ToolBar accessibleRole="BUTTON" depthTest="ENABLE" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+            <HBox alignment="TOP_CENTER" spacing="10.0">
+          <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#showAddNewPoemDialog" style="-fx-alignment: center;" text="Add New Poem" textAlignment="CENTER" textOverrun="CLIP">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
+            <Button mnemonicParsing="false" onAction="#showAddNewCoupletDialog" style="-fx-alignment: center" text="Add New Couplet" textAlignment="CENTER">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
+            <Button mnemonicParsing="false" onAction="#showAddNewRootDialog" text="Add New Root" textAlignment="CENTER">
+                  <font>
+                     <Font name="Arial" size="13.0" />
+                  </font></Button>
+               <effect>
+                  <Lighting bumpInput="$null">
+                     <light>
+                        <Light.Distant />
+                     </light>
+                  </Lighting>
+               </effect>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+        </items>
+      </ToolBar>
+
+   </top>
+    <left>
+        <TableView fx:id="poemTable" prefHeight="200.0" prefWidth="350.0" style="-fx-alignment: center; -fx-font-size: 12" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+
+            <columns>
+                <TableColumn fx:id="title_column" prefWidth="300.0" style="-fx-alignment: center" text="Title" />
+                <TableColumn fx:id="poet_column" prefWidth="250.0" style="-fx-alignment: center" text="Poet" />
+                <TableColumn fx:id="book_column" prefWidth="250.0" style="-fx-alignment: center" text="Book" />
+            </columns>
+        </TableView>
+    </left>
+    <center>
+        <HBox>
+        <Label text="Couplets" />
+        </HBox>
+        <TableView fx:id="coupletTableView" prefHeight="200.0" prefWidth="250.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="line1" prefWidth="250.0" style="-fx-alignment: center" text="Line 1" />
+                <TableColumn fx:id="line2" prefWidth="250.0" style="-fx-alignment: center" text="Line 2" />
+            </columns>
+        </TableView>
+    </center>
+    <right>
+        <TableView fx:id="rootTableView" prefHeight="200.0" prefWidth="150.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="rootLetters" prefWidth="50.0" style="-fx-alignment: center" text="Roots" />
+                <TableColumn fx:id="inQuran" prefWidth="30.0" style="-fx-alignment: center" text="In Quran" />
+            </columns>
+        </TableView>
+    </right>
+    <bottom>
+
+
+    </bottom>
+</BorderPane>

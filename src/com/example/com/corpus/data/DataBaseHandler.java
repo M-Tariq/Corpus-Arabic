@@ -64,24 +64,28 @@ public class DataBaseHandler {
         return poemList;
     }
     public ObservableList<Couplet> getCouplets(int poemId){
-        Couplet couplet=new Couplet();
-        String query="SELECT * FROM couplet where poemId="+poemId;
+        System.out.println(""+poemId);
+
+        ObservableList<Couplet> couplets=FXCollections.observableArrayList();
+        String query="SELECT * FROM couplet where poemId=?";
         try {
-            Statement statement=connection.createStatement();
-            ResultSet resultSet=statement.executeQuery(query);
+            PreparedStatement preparedStatement=connection.prepareStatement(query);
+            preparedStatement.setInt(1, poemId);
+            ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
+                Couplet couplet=new Couplet();
                 couplet.setID(resultSet.getInt("coupletId"));
                 couplet.setPoemID(resultSet.getInt("poemId"));
                 couplet.setLine1(resultSet.getString("line1"));
                 couplet.setLine2(resultSet.getString("line2"));
                 if(couplet!=null){
-                    coupletlist.add(couplet);
+                    couplets.add(couplet);
                 }
             }
         } catch (SQLException throwables) {
             System.out.println(throwables.getMessage());
         }
-        return coupletlist;
+        return couplets;
     }
 
     public void insertPoem(Poem poem) {
@@ -150,5 +154,58 @@ public class DataBaseHandler {
         }
 
         return roots;
+    }
+
+    public void deletePoem(Poem poem) {
+        String query="DELETE from poem where poemId=?;";
+        try {
+            PreparedStatement preparedStatement=connection.prepareStatement(query);
+            preparedStatement.setInt(1,poem.getID());
+            preparedStatement.executeUpdate();
+            System.out.println("Deleted Successfully");
+            poemList.remove(poem);
+            deleteCouplet(poem);
+        } catch (SQLException e) {
+           System.out.println(e.getMessage()+e.getCause());
+        }
+    }
+
+    private void deleteCouplet(Poem poem) {
+        String query="DELETE FROM couplet where poemId=?;";
+        PreparedStatement preparedStatement= null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, poem.getID());
+            preparedStatement.executeUpdate();
+            System.out.println("Couplet Deleted Successfully");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()+e.getCause());
+        }
+    }
+
+    public void deleteSingleCouplet(int id) {
+        String query="DELETE FROM couplet where coupletId=?;";
+        PreparedStatement preparedStatement= null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+            System.out.println("Couplet Deleted Successfully");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()+e.getCause());
+        }
+    }
+
+    public void deleteRoot(Root root) {
+        String query="DELETE FROM root where rootId=?;";
+        PreparedStatement preparedStatement= null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, root.getId());
+            preparedStatement.executeUpdate();
+            System.out.println("Root Deleted Successfully");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()+e.getCause());
+        }
     }
 }
