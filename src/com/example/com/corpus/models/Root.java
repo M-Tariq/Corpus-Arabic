@@ -28,4 +28,11 @@ public class Root {
     public void setRoot(String root) {
         this.root = root;
     }
+
+    public int getID() {
+        return id;
+    }
+    public void setID(int id) {
+        this.id=id;
+    }
 }

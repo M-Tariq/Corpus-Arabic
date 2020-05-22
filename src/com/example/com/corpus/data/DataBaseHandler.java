@@ -208,4 +208,49 @@ public class DataBaseHandler {
             System.out.println(e.getMessage()+e.getCause());
         }
     }
+
+    public void updatePoem(Poem poem) {
+        String query="UPDATE poem set poemTitle=?, bookName=?, poetName=? where poemId=?;";
+        PreparedStatement preparedStatement= null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, poem.getTitle());
+            preparedStatement.setString(2, poem.getBook());
+            preparedStatement.setString(3, poem.getTitle());
+            preparedStatement.setInt(4, poem.getID());
+            preparedStatement.executeUpdate();
+            System.out.println("Poem Updated Successfully");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()+e.getCause());
+        }
+    }
+
+    public void updateCouplet(Couplet updatedCouplet) {
+        String query="UPDATE couplet set line1=?, line2=? where coupletId=?;";
+        PreparedStatement preparedStatement= null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, updatedCouplet.getLine1());
+            preparedStatement.setString(2, updatedCouplet.getLine2());
+            preparedStatement.setInt(3, updatedCouplet.getID());
+            preparedStatement.executeUpdate();
+            //System.out.println("Couplet Updated Successfully");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()+e.getCause());
+        }
+    }
+
+    public void updateRoot(Root updatedRoot) {
+        String query="UPDATE root set rootLetters=?, inQuran=? where rootId=?;";
+        PreparedStatement preparedStatement= null;
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, updatedRoot.getRoot());
+            preparedStatement.setBoolean(2, updatedRoot.isInQuran());
+            preparedStatement.setInt(3, updatedRoot.getID());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()+e.getCause());
+        }
+    }
 }

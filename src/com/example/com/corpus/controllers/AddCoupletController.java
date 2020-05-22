@@ -21,5 +21,4 @@ public class AddCoupletController {
         couplet.setLine2(coupletline2.getText());
         return couplet;
     }
-
 }

@@ -27,4 +27,12 @@ public class AddPoemController {
         book.setText(poem.getBook());
         poet.setText(poem.getPoet());
     }
+
+    public Poem updatedPoem() {
+        Poem poem=new Poem();
+        poem.setTitle(title.getText());
+        poem.setPoet(poet.getText());
+        poem.setBook(book.getText());
+        return poem;
+    }
 }
